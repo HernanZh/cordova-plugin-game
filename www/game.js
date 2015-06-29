@@ -9,12 +9,15 @@ module.exports = {
 		function (error) {
 		}, "Game", "setUp", []);
     },
-	login: function (tag) {
+	login: function (tag, onSuccess, onFail) {
 		var self = this;
 		cordova.exec(function (result) {
 			var playerDetail = result;
 			self._loggedin = true;
-			self.tag = tag;			
+			self.tag = tag;
+			if (onSuccess) {
+				onSuccess(result);
+			}
 			if (self.onLoginSucceeded)
 				self.onLoginSucceeded(playerDetail);
 		}, 
@@ -22,14 +25,23 @@ module.exports = {
 			self.tag = tag;		
 			if (self.onLoginFailed)			
 				self.onLoginFailed();
+			if (onFail) {
+				onFail(error);
+			}
 		}, "Game", "login", []);
     },
-	logout: function () {
+	logout: function (onSuccess, onFail) {
 		var self = this;
 		cordova.exec(function (result) {
 			self._loggedin = false;
+			if (onSuccess) {
+				onSuccess(result);
+			}
 		}, 
 		function (error) {
+			if (onFail) {
+				onFail(error);
+			}
 		}, "Game", "logout", []);
     },
 	isLoggedIn: function () {
